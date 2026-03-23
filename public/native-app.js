@@ -1,4 +1,6 @@
-﻿const samplePuzzle = '...13.....1...45....2....6.1..3...7.2...5...8.4...6..9.5....7....67...9.....89...';
+﻿import { samplePuzzles } from './sample-puzzles.js';
+
+let currentSampleIndex = 0;
 
 const puzzleEl = document.getElementById('puzzle');
 const statusEl = document.getElementById('status');
@@ -14,8 +16,7 @@ function setStatus(message, type = '') {
 function normalizePuzzle(input) {
   return String(input || '')
     .replace(/[|+\-!]/g, '')
-    .replace(/\s+/g, '')
-    .replace(/0/g, '.');
+    .replace(/\s+/g, '');
 }
 
 function renderPuzzleGrid(puzzle) {
@@ -26,7 +27,7 @@ function renderPuzzleGrid(puzzle) {
     const cell = document.createElement('div');
     cell.className = 'cell';
     const value = source[i] || '.';
-    if (value !== '.') {
+    if (value !== '.' && value !== '0') {
       cell.classList.add('given');
       cell.textContent = value;
     }
@@ -45,7 +46,7 @@ function renderGrid(originalPuzzle, solvedGrid) {
   for (let i = 0; i < solved.length; i += 1) {
     const cell = document.createElement('div');
     cell.className = 'cell';
-    if (source[i] !== '.') cell.classList.add('given');
+    if (source[i] !== '.' && source[i] !== '0') cell.classList.add('given');
     cell.textContent = solved[i];
     gridEl.appendChild(cell);
   }
@@ -99,16 +100,23 @@ async function solvePuzzle() {
 
 document.getElementById('solve').addEventListener('click', solvePuzzle);
 document.getElementById('sample').addEventListener('click', () => {
-  puzzleEl.value = samplePuzzle;
-  renderPuzzleGrid(samplePuzzle);
-  setStatus('');
+  currentSampleIndex = (currentSampleIndex + 1) % samplePuzzles.length;
+  const puzzle = samplePuzzles[currentSampleIndex];
+  puzzleEl.value = puzzle;
+  renderPuzzleGrid(puzzle);
+  setStatus(`Sample Loaded: ${currentSampleIndex + 1}/${samplePuzzles.length}`, 'ok');
 });
-document.getElementById('clear').addEventListener('click', () => {
-  puzzleEl.value = '';
-  renderPuzzleGrid('');
-  rulesEl.innerHTML = '';
-  outputEl.textContent = '';
-  setStatus('');
+document.getElementById('clear').addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    puzzleEl.value = text;
+    renderPuzzleGrid(text);
+    rulesEl.innerHTML = '';
+    outputEl.textContent = '';
+    setStatus('Pasted from clipboard', 'ok');
+  } catch (error) {
+    setStatus('Failed to paste from clipboard', 'error');
+  }
 });
 
 // Update grid when puzzle is pasted or typed
@@ -117,5 +125,5 @@ puzzleEl.addEventListener('input', () => {
 });
 
 // Initialize board with sample puzzle on page load
-puzzleEl.value = samplePuzzle;
-renderPuzzleGrid(samplePuzzle);
+puzzleEl.value = samplePuzzles[0];
+renderPuzzleGrid(samplePuzzles[0]);

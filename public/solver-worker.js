@@ -3,7 +3,7 @@ const COMMAND_FILE = '/workspace/run.clp';
 const CONFIG_FILE = `${CSP_ROOT}/SudoRules-V20.1-web-config.clp`;
 
 let runtimeFactoryPromise;
-let assetLoadPromise;
+let bundlePromise;
 
 function normalizePuzzle(input) {
   const normalized = String(input || '')
@@ -101,27 +101,25 @@ async function loadRuntimeFactory() {
 }
 
 async function ensureBrowserAssets(module) {
-  if (assetLoadPromise) return assetLoadPromise;
+  if (!bundlePromise) {
+    bundlePromise = fetch(new URL('./csp/bundle.json', self.location.href)).then((r) => {
+      if (!r.ok) {
+        throw new Error('Missing packaged CLIPS bundle. Run `npm run prepare:web` first.');
+      }
+      return r.json();
+    });
+  }
 
   module.FS.mkdirTree('/workspace');
   module.FS.mkdirTree(CSP_ROOT);
 
-  assetLoadPromise = (async () => {
-    const bundleResponse = await fetch(new URL('./csp/bundle.json', self.location.href));
-    if (!bundleResponse.ok) {
-      throw new Error('Missing packaged CLIPS bundle. Run `npm run prepare:web` first.');
-    }
-
-    const bundle = await bundleResponse.json();
-    for (const [relativePath, content] of Object.entries(bundle)) {
-      const virtualPath = `${CSP_ROOT}/${relativePath}`;
-      const parentDir = virtualPath.slice(0, virtualPath.lastIndexOf('/')) || '/';
-      module.FS.mkdirTree(parentDir);
-      module.FS.writeFile(virtualPath, content, { encoding: 'utf8' });
-    }
-  })();
-
-  return assetLoadPromise;
+  const bundle = await bundlePromise;
+  for (const [relativePath, content] of Object.entries(bundle)) {
+    const virtualPath = `${CSP_ROOT}/${relativePath}`;
+    const parentDir = virtualPath.slice(0, virtualPath.lastIndexOf('/')) || '/';
+    module.FS.mkdirTree(parentDir);
+    module.FS.writeFile(virtualPath, content, { encoding: 'utf8' });
+  }
 }
 
 async function solveInBrowser(puzzle) {
