@@ -109,7 +109,7 @@ export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtn
     const li = rulesEl.children[index];
     if (li) {
       li.classList.add('step-active');
-      li.scrollIntoView({ block: 'nearest' });
+      rulesEl.scrollTop = li.offsetTop - rulesEl.offsetTop;
     }
     const { boardState, highlightCells } = stepStates[index];
     renderStepBoard(gridEl, currentPuzzle, boardState, highlightCells);
