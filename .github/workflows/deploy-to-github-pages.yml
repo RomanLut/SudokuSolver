@@ -25,6 +25,9 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Install SVN
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
       - name: Download CLIPS core source
         run: |
           mkdir -p vendor/clips631/clips_core_source_631/core
