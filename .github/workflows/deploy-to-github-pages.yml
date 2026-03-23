@@ -47,11 +47,24 @@ jobs:
 
       - name: Build WASM
         run: |
-          ls -la vendor/clips631/clips_core_source_631/core/
           cd vendor/clips631/clips_core_source_631/core
           mkdir -p ../../../public/wasm
           emcc *.c -O2 -s MODULARIZE=1 -s EXPORT_NAME=createClipsModule -s ENVIRONMENT=web,worker -s FORCE_FILESYSTEM=1 -s ALLOW_MEMORY_GROWTH=1 -s EXIT_RUNTIME=1 -s EMULATE_FUNCTION_POINTER_CASTS=1 -s EXPORTED_RUNTIME_METHODS="['callMain','FS']" -o ../../../public/wasm/clips.js
+          echo "WASM build complete. Checking output files:"
           ls -la ../../../public/wasm/
+          pwd
+
+      - name: Verify WASM files exist
+        run: |
+          if [ -f "public/wasm/clips.js" ] && [ -f "public/wasm/clips.wasm" ]; then
+            echo "✓ WASM files found:"
+            ls -la public/wasm/
+          else
+            echo "✗ WASM files missing!"
+            echo "Contents of public/wasm/:"
+            ls -la public/wasm/ || echo "Directory does not exist"
+            exit 1
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
