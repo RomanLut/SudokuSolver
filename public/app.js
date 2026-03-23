@@ -8,9 +8,8 @@ const outputEl = document.getElementById('output');
 
 let solverBridgePromise;
 
-function setStatus(message, type = '') {
-  statusEl.textContent = message;
-  statusEl.className = `status ${type}`.trim();
+function setStatus(message, type = 'info') {
+  statusEl.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
 }
 
 function normalizePuzzle(input) {
@@ -42,6 +41,7 @@ function renderRules(rulesUsed) {
 
   if (!rulesUsed || !rulesUsed.length) {
     const li = document.createElement('li');
+    li.className = 'list-group-item';
     li.textContent = 'No rule lines were parsed from solver output.';
     rulesEl.appendChild(li);
     return;
@@ -49,6 +49,7 @@ function renderRules(rulesUsed) {
 
   for (const rule of rulesUsed) {
     const li = document.createElement('li');
+    li.className = 'list-group-item';
     li.textContent = rule;
     rulesEl.appendChild(li);
   }
@@ -102,7 +103,7 @@ async function getSolverBridge() {
 
 async function solvePuzzle() {
   const puzzle = puzzleEl.value;
-  setStatus('Solving in WebAssembly...');
+  setStatus('Solving in WebAssembly...', 'info');
   outputEl.textContent = '';
   rulesEl.innerHTML = '';
   gridEl.innerHTML = '';
@@ -113,21 +114,21 @@ async function solvePuzzle() {
     renderGrid(puzzle, data.solvedGrid);
     renderRules(data.rulesUsed);
     outputEl.textContent = data.rawOutput || '';
-    setStatus(`Solved in browser. Parsed ${data.rulesUsed.length} rule lines.`, 'ok');
+    setStatus(`Solved in browser. Parsed ${data.rulesUsed.length} rule lines.`, 'success');
   } catch (error) {
-    setStatus(error.message || String(error), 'error');
+    setStatus(error.message || String(error), 'danger');
   }
 }
 
 document.getElementById('solve').addEventListener('click', solvePuzzle);
 document.getElementById('sample').addEventListener('click', () => {
   puzzleEl.value = samplePuzzle;
-  setStatus('');
+  statusEl.innerHTML = '';
 });
 document.getElementById('clear').addEventListener('click', () => {
   puzzleEl.value = '';
   gridEl.innerHTML = '';
   rulesEl.innerHTML = '';
   outputEl.textContent = '';
-  setStatus('');
+  statusEl.innerHTML = '';
 });
