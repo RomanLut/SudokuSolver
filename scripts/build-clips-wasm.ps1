@@ -1,15 +1,9 @@
 $ErrorActionPreference = "Stop"
 
 $Root = Resolve-Path (Join-Path $PSScriptRoot "..")
-$VendorCoreDir = Join-Path $Root "vendor\clips631\clips_core_source_631\core"
-$BundledCoreDir = Join-Path $Root "CSP-Rules-V2.1\CLIPS\core-64"
-$CoreDir = $BundledCoreDir
+$CoreDir = Join-Path $Root "vendor\clips631\clips_core_source_631\core"
 $OutDir = Join-Path $Root "public\wasm"
 $LocalEmcc = Join-Path $Root ".emsdk\upstream\emscripten\emcc.bat"
-
-if (Test-Path $VendorCoreDir) {
-    $CoreDir = $VendorCoreDir
-}
 
 $Emcc = $null
 if (Test-Path $LocalEmcc) {
