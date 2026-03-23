@@ -42,7 +42,15 @@
                 </div>
                 <div class="col-12">
                     <div class="panel">
-                        <h2 class="h4">Rules Used</h2>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h2 class="h4 mb-0">Rules Used</h2>
+                            <div class="d-flex gap-2">
+                                <button id="step-first" class="btn btn-sm btn-outline-secondary" disabled>&#9646;&#9664; First</button>
+                                <button id="step-prev" class="btn btn-sm btn-outline-secondary" disabled>&#9664; Prev</button>
+                                <button id="step-next" class="btn btn-sm btn-outline-secondary" disabled>Next &#9654;</button>
+                                <button id="step-last" class="btn btn-sm btn-outline-secondary" disabled>Last &#9654;&#9646;</button>
+                            </div>
+                        </div>
                         <ol id="rules" class="list-group list-group-numbered"></ol>
                     </div>
                 </div>
