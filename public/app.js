@@ -8,8 +8,9 @@ const outputEl = document.getElementById('output');
 
 let solverBridgePromise;
 
-function setStatus(message, type = 'info') {
-  statusEl.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
+function setStatus(message, type = '') {
+  statusEl.textContent = message;
+  statusEl.className = `status ${type}`.trim();
 }
 
 function normalizePuzzle(input) {
@@ -17,6 +18,22 @@ function normalizePuzzle(input) {
     .replace(/[|+\-!]/g, '')
     .replace(/\s+/g, '')
     .replace(/0/g, '.');
+}
+
+function renderPuzzleGrid(puzzle) {
+  gridEl.innerHTML = '';
+  const source = normalizePuzzle(puzzle);
+  
+  for (let i = 0; i < 81; i += 1) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const value = source[i] || '.';
+    if (value !== '.') {
+      cell.classList.add('given');
+      cell.textContent = value;
+    }
+    gridEl.appendChild(cell);
+  }
 }
 
 function renderGrid(originalPuzzle, solvedGrid) {
@@ -103,10 +120,9 @@ async function getSolverBridge() {
 
 async function solvePuzzle() {
   const puzzle = puzzleEl.value;
-  setStatus('Solving in WebAssembly...', 'info');
+  setStatus('Solving...', 'solving');
   outputEl.textContent = '';
   rulesEl.innerHTML = '';
-  gridEl.innerHTML = '';
 
   try {
     const solver = await getSolverBridge();
@@ -114,21 +130,31 @@ async function solvePuzzle() {
     renderGrid(puzzle, data.solvedGrid);
     renderRules(data.rulesUsed);
     outputEl.textContent = data.rawOutput || '';
-    setStatus(`Solved in browser. Parsed ${data.rulesUsed.length} rule lines.`, 'success');
+    setStatus(`Solved in browser. Parsed ${data.rulesUsed.length} rule lines.`, 'ok');
   } catch (error) {
-    setStatus(error.message || String(error), 'danger');
+    setStatus(error.message || String(error), 'error');
   }
 }
 
 document.getElementById('solve').addEventListener('click', solvePuzzle);
 document.getElementById('sample').addEventListener('click', () => {
   puzzleEl.value = samplePuzzle;
+  renderPuzzleGrid(samplePuzzle);
   statusEl.innerHTML = '';
 });
 document.getElementById('clear').addEventListener('click', () => {
   puzzleEl.value = '';
-  gridEl.innerHTML = '';
+  renderPuzzleGrid('');
   rulesEl.innerHTML = '';
   outputEl.textContent = '';
   statusEl.innerHTML = '';
 });
+
+// Update grid when puzzle is pasted or typed
+puzzleEl.addEventListener('input', () => {
+  renderPuzzleGrid(puzzleEl.value);
+});
+
+// Initialize board with sample puzzle on page load
+puzzleEl.value = samplePuzzle;
+renderPuzzleGrid(samplePuzzle);

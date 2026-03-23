@@ -8,115 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #f0f2f5;
-            --panel: #ffffff;
-            --ink: #333333;
-            --muted: #6c757d;
-            --line: #e0e0e0;
-            --accent: #ff6f61;
-            --accent-dark: #e65a50;
-            --ok: #28a745;
-            --error: #dc3545;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--ink);
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .container {
-            max-width: 1200px;
-        }
-
-        h1 {
-            font-weight: 700;
-        }
-        
-        h2, .h4 {
-            font-family: 'Fira Code', monospace;
-            font-size: 1rem;
-        }
-
-        .lead {
-            color: var(--muted);
-        }
-
-        .panel {
-            background-color: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: 0;
-            padding: 1.5rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
-            height: 100%;
-        }
-
-        textarea#puzzle {
-            font-family: 'Fira Code', monospace;
-            min-height: 200px;
-            background-color: #f8f9fa;
-            border-color: #ced4da;
-            border-radius: 0;
-        }
-
-        .btn {
-            border-radius: 0;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            gap: 0;
-            width: 100%;
-            max-width: 420px;
-            margin: 0 auto;
-            border: 3px solid var(--ink);
-            background: #fff;
-        }
-
-        .cell {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-right: 1px solid var(--line);
-            border-bottom: 1px solid var(--line);
-            font-family: 'Fira Code', monospace;
-            font-size: 1.25rem;
-        }
-        
-        .cell:nth-child(3n) { border-right: 3px solid var(--ink); }
-        .cell:nth-child(9n) { border-right: 0; }
-        
-        .cell:nth-child(n+19):nth-child(-n+27),
-        .cell:nth-child(n+46):nth-child(-n+54) {
-            border-bottom: 3px solid var(--ink);
-        }
-
-        .cell.given {
-            background: #e9ecef;
-        }
-
-        #rules {
-            font-family: 'Fira Code', monospace;
-            font-size: 0.875rem;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        #output {
-            font-family: 'Fira Code', monospace;
-            font-size: 0.875rem;
-            background-color: #212529;
-            color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="shared-styles.css">
 </head>
 <body>
 <main class="container py-5">
@@ -144,7 +36,7 @@
             <div class="row g-4">
                 <div class="col-12">
                     <div class="panel">
-                        <h2 class="h4">Solved Grid</h2>
+                        <h2 class="h4">Grid</h2>
                         <div id="grid" class="grid" aria-live="polite"></div>
                     </div>
                 </div>

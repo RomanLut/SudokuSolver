@@ -18,6 +18,22 @@ function normalizePuzzle(input) {
     .replace(/0/g, '.');
 }
 
+function renderPuzzleGrid(puzzle) {
+  gridEl.innerHTML = '';
+  const source = normalizePuzzle(puzzle);
+  
+  for (let i = 0; i < 81; i += 1) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const value = source[i] || '.';
+    if (value !== '.') {
+      cell.classList.add('given');
+      cell.textContent = value;
+    }
+    gridEl.appendChild(cell);
+  }
+}
+
 function renderGrid(originalPuzzle, solvedGrid) {
   gridEl.innerHTML = '';
 
@@ -40,6 +56,7 @@ function renderRules(rulesUsed) {
 
   if (!rulesUsed || !rulesUsed.length) {
     const li = document.createElement('li');
+    li.className = 'list-group-item';
     li.textContent = 'No rule lines were parsed from solver output.';
     rulesEl.appendChild(li);
     return;
@@ -47,6 +64,7 @@ function renderRules(rulesUsed) {
 
   for (const rule of rulesUsed) {
     const li = document.createElement('li');
+    li.className = 'list-group-item';
     li.textContent = rule;
     rulesEl.appendChild(li);
   }
@@ -54,10 +72,9 @@ function renderRules(rulesUsed) {
 
 async function solvePuzzle() {
   const puzzle = puzzleEl.value;
-  setStatus('Solving with native CLIPS executable...');
+  setStatus('Solving...', 'solving');
   outputEl.textContent = '';
   rulesEl.innerHTML = '';
-  gridEl.innerHTML = '';
 
   try {
     const response = await fetch('/api/solve', {
@@ -83,12 +100,22 @@ async function solvePuzzle() {
 document.getElementById('solve').addEventListener('click', solvePuzzle);
 document.getElementById('sample').addEventListener('click', () => {
   puzzleEl.value = samplePuzzle;
+  renderPuzzleGrid(samplePuzzle);
   setStatus('');
 });
 document.getElementById('clear').addEventListener('click', () => {
   puzzleEl.value = '';
-  gridEl.innerHTML = '';
+  renderPuzzleGrid('');
   rulesEl.innerHTML = '';
   outputEl.textContent = '';
   setStatus('');
 });
+
+// Update grid when puzzle is pasted or typed
+puzzleEl.addEventListener('input', () => {
+  renderPuzzleGrid(puzzleEl.value);
+});
+
+// Initialize board with sample puzzle on page load
+puzzleEl.value = samplePuzzle;
+renderPuzzleGrid(samplePuzzle);
