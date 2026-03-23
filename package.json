@@ -1,0 +1,12 @@
+{
+  "name": "sudoku-solver",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-first Sudoku rule solver backed by Denis Berthier's SudoRules",
+  "scripts": {
+    "start": "node server.js",
+    "prepare:web": "node scripts/package-web-assets.mjs",
+    "build:wasm": "powershell -ExecutionPolicy Bypass -File ./scripts/build-clips-wasm.ps1",
+    "build:web": "npm run prepare:web && npm run build:wasm"
+  }
+}
