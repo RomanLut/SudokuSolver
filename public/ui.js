@@ -52,18 +52,33 @@ function parseCellRefs(rule) {
 function buildStepStates(originalPuzzle, rulesUsed) {
   const source = normalizePuzzle(originalPuzzle);
   const board = source.split('').map(c => (c === '.' || c === '0') ? '' : c);
+  // given cells start with no candidates; empty cells start with all 9
+  const cands = board.map(v => v ? new Set() : new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]));
 
   return rulesUsed.map(rule => {
+    // assignments: rXcY=Z  (not preceded by !)
     const assignRegex = /r(\d)c(\d)=(\d)/g;
     let m;
     while ((m = assignRegex.exec(rule)) !== null) {
-      board[(parseInt(m[1]) - 1) * 9 + (parseInt(m[2]) - 1)] = m[3];
+      const idx = (parseInt(m[1]) - 1) * 9 + (parseInt(m[2]) - 1);
+      board[idx] = m[3];
+      cands[idx] = new Set();
     }
-    return { boardState: [...board], highlightCells: parseCellRefs(rule) };
+    // eliminations: rXcY!=Z
+    const elimRegex = /r(\d)c(\d)≠(\d)/g;
+    while ((m = elimRegex.exec(rule)) !== null) {
+      const idx = (parseInt(m[1]) - 1) * 9 + (parseInt(m[2]) - 1);
+      cands[idx].delete(parseInt(m[3]));
+    }
+    return {
+      boardState: [...board],
+      candsState: cands.map(s => new Set(s)),
+      highlightCells: parseCellRefs(rule),
+    };
   });
 }
 
-function renderStepBoard(gridEl, originalPuzzle, boardState, highlightCells) {
+function renderStepBoard(gridEl, originalPuzzle, boardState, candsState, highlightCells) {
   gridEl.innerHTML = '';
   const source = normalizePuzzle(originalPuzzle);
   const highlightSet = new Set(highlightCells);
@@ -73,7 +88,20 @@ function renderStepBoard(gridEl, originalPuzzle, boardState, highlightCells) {
     cell.className = 'cell';
     if (source[i] !== '.' && source[i] !== '0') cell.classList.add('given');
     if (highlightSet.has(i)) cell.classList.add('step-highlight');
-    cell.textContent = boardState[i] || '';
+
+    if (boardState[i]) {
+      cell.textContent = boardState[i];
+    } else if (candsState[i].size < 9) {
+      const notes = document.createElement('div');
+      notes.className = 'notes';
+      for (let n = 1; n <= 9; n += 1) {
+        const span = document.createElement('span');
+        if (candsState[i].has(n)) span.textContent = n;
+        notes.appendChild(span);
+      }
+      cell.appendChild(notes);
+    }
+
     gridEl.appendChild(cell);
   }
 }
@@ -86,12 +114,13 @@ export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtn
 
   function updateButtons() {
     const total = stepStates.length;
-    const atStart = total === 0 || selectedStepIndex <= 0;
-    const atEnd   = total === 0 || selectedStepIndex >= total - 1;
-    if (firstBtnEl) firstBtnEl.disabled = atStart;
-    if (prevBtnEl)  prevBtnEl.disabled  = atStart;
-    if (nextBtnEl)  nextBtnEl.disabled  = atEnd;
-    if (lastBtnEl)  lastBtnEl.disabled  = atEnd;
+    const noSteps = total === 0;
+    const atStart = !noSteps && selectedStepIndex === 0;
+    const atEnd   = !noSteps && selectedStepIndex === total - 1;
+    if (firstBtnEl) firstBtnEl.disabled = noSteps || atStart;
+    if (prevBtnEl)  prevBtnEl.disabled  = noSteps || atStart;
+    if (nextBtnEl)  nextBtnEl.disabled  = noSteps || atEnd;
+    if (lastBtnEl)  lastBtnEl.disabled  = noSteps || atEnd;
   }
 
   function selectStep(index) {
@@ -111,8 +140,8 @@ export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtn
       li.classList.add('step-active');
       rulesEl.scrollTop = li.offsetTop - rulesEl.offsetTop;
     }
-    const { boardState, highlightCells } = stepStates[index];
-    renderStepBoard(gridEl, currentPuzzle, boardState, highlightCells);
+    const { boardState, candsState, highlightCells } = stepStates[index];
+    renderStepBoard(gridEl, currentPuzzle, boardState, candsState, highlightCells);
     updateButtons();
   }
 

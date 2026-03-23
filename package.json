@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "prepare:web": "node scripts/package-web-assets.mjs",
-    "build:wasm": "powershell -ExecutionPolicy Bypass -File ./scripts/build-clips-wasm.ps1",
+    "build:wasm": "pwsh -ExecutionPolicy Bypass -File ./scripts/build-clips-wasm.ps1",
     "build:web": "npm run prepare:web && npm run build:wasm"
   }
 }
