@@ -30,8 +30,9 @@ jobs:
 
       - name: Download CLIPS core source
         run: |
-          mkdir -p vendor/clips631/clips_core_source_631/core
+          mkdir -p vendor/clips631/clips_core_source_631
           svn checkout https://svn.code.sf.net/p/clipsrules/code/branches/63x/core vendor/clips631/clips_core_source_631/core
+          ls -la vendor/clips631/clips_core_source_631/core/
 
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v14
@@ -46,9 +47,11 @@ jobs:
 
       - name: Build WASM
         run: |
+          ls -la vendor/clips631/clips_core_source_631/core/
           cd vendor/clips631/clips_core_source_631/core
           mkdir -p ../../../public/wasm
           emcc *.c -O2 -s MODULARIZE=1 -s EXPORT_NAME=createClipsModule -s ENVIRONMENT=web,worker -s FORCE_FILESYSTEM=1 -s ALLOW_MEMORY_GROWTH=1 -s EXIT_RUNTIME=1 -s EMULATE_FUNCTION_POINTER_CASTS=1 -s EXPORTED_RUNTIME_METHODS="['callMain','FS']" -o ../../../public/wasm/clips.js
+          ls -la ../../../public/wasm/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
