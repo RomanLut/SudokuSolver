@@ -147,7 +147,7 @@ export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtn
     if (lastBtnEl)  lastBtnEl.disabled  = noSteps || atEnd;
   }
 
-  function selectStep(index) {
+  function selectStep(index, scroll = false) {
     const prev = selectedStepIndex >= 0 ? rulesEl.children[selectedStepIndex] : null;
     if (prev) prev.classList.remove('step-active');
 
@@ -162,7 +162,7 @@ export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtn
     const li = rulesEl.children[index];
     if (li) {
       li.classList.add('step-active');
-      rulesEl.scrollTop = li.offsetTop - rulesEl.offsetTop;
+      if (scroll) rulesEl.scrollTop = li.offsetTop - rulesEl.offsetTop;
     }
     const { boardState, candsState, highlightCells } = stepStates[index];
     renderStepBoard(gridEl, currentPuzzle, boardState, candsState, highlightCells);
@@ -195,10 +195,10 @@ export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtn
     updateButtons();
   }
 
-  if (firstBtnEl) firstBtnEl.addEventListener('click', () => selectStep(0));
-  if (prevBtnEl)  prevBtnEl.addEventListener('click',  () => selectStep(selectedStepIndex <= 0 ? 0 : selectedStepIndex - 1));
-  if (nextBtnEl)  nextBtnEl.addEventListener('click',  () => selectStep(selectedStepIndex + 1));
-  if (lastBtnEl)  lastBtnEl.addEventListener('click',  () => selectStep(stepStates.length - 1));
+  if (firstBtnEl) firstBtnEl.addEventListener('click', () => selectStep(0, true));
+  if (prevBtnEl)  prevBtnEl.addEventListener('click',  () => selectStep(selectedStepIndex <= 0 ? 0 : selectedStepIndex - 1, true));
+  if (nextBtnEl)  nextBtnEl.addEventListener('click',  () => selectStep(selectedStepIndex + 1, true));
+  if (lastBtnEl)  lastBtnEl.addEventListener('click',  () => selectStep(stepStates.length - 1, true));
 
   return {
     setup(puzzle, solvedGrid, rulesUsed) {
