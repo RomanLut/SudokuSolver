@@ -2,7 +2,11 @@
 
 Sudoku solver based on Denis Berthier's SudoRules.
 
-This project runs the Sudoku solver in the browser with a CLIPS WebAssembly runtime and keeps a native executable comparison page on the same local server.
+This project runs the Sudoku solver in the browser with a CLIPS WebAssembly runtime. 
+
+Available on: https://romanlut.github.io/SudokuSolver/
+
+Local build keeps a native executable for comparison.
 
 - public/index.html is the WebAssembly UI.
 - public/native.html is the native executable UI.
@@ -32,8 +36,6 @@ Then open `http://localhost:3004/` for the WebAssembly UI or `http://localhost:3
 
 - sudorules.js runs the local clip-63.exe flow.
 - `public/native.html` uses `/api/solve` so it exercises the native executable backend directly.
-
-The main browser UI remains WebAssembly-first. The native page is kept for comparison and local reference testing.
 
 ## Project Structure
 
