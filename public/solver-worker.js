@@ -19,6 +19,7 @@ function normalizePuzzle(input) {
 }
 
 function parseSolvedGrid(output) {
+  if (/IS NOT SOLVED/i.test(output)) return null;
   const lines = output.split(/\r?\n/);
   const gridLines = [];
 

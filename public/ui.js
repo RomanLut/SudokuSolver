@@ -157,7 +157,14 @@ export function createStepViewer(gridEl, rulesEl, explainBtnEl, copyBtnEl, first
 
     if (index < 0 || index >= stepStates.length) {
       selectedStepIndex = -1;
-      renderGrid(gridEl, currentPuzzle, currentSolvedGrid);
+      if (currentSolvedGrid) {
+        renderGrid(gridEl, currentPuzzle, currentSolvedGrid);
+      } else if (stepStates.length > 0) {
+        const last = stepStates[stepStates.length - 1];
+        renderStepBoard(gridEl, currentPuzzle, last.boardState, last.candsState, []);
+      } else {
+        renderPuzzleGrid(gridEl, currentPuzzle);
+      }
       updateButtons();
       return;
     }
@@ -229,6 +236,10 @@ export function createStepViewer(gridEl, rulesEl, explainBtnEl, copyBtnEl, first
       rulesUsed = rules;
       stepStates = buildStepStates(puzzle, rules);
       renderRules(rules);
+      if (!solvedGrid && stepStates.length > 0) {
+        const last = stepStates[stepStates.length - 1];
+        renderStepBoard(gridEl, currentPuzzle, last.boardState, last.candsState, []);
+      }
     },
   };
 }

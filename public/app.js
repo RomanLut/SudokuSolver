@@ -92,10 +92,16 @@ async function solvePuzzle() {
   try {
     const solver = await getSolverBridge();
     const data = await solver.solve(puzzle);
-    renderGrid(gridEl, puzzle, data.solvedGrid);
     stepViewer.setup(puzzle, data.solvedGrid, data.rulesUsed);
     outputEl.textContent = data.rawOutput || '';
-    setStatus(`Solved in browser. Parsed ${data.rulesUsed.length} rule lines.`, 'ok');
+    if (data.solvedGrid) {
+      renderGrid(gridEl, puzzle, data.solvedGrid);
+      setStatus(`Solved in browser. Parsed ${data.rulesUsed.length} rule lines.`, 'ok');
+    } else {
+      const missing = (data.rawOutput || '').match(/(\d+)\s+VALUES?\s+MISSING/i);
+      const missingMsg = missing ? ` ${missing[1]} values missing.` : '';
+      setStatus(`Not solved.${missingMsg} Parsed ${data.rulesUsed.length} rule lines.`, 'error');
+    }
   } catch (error) {
     setStatus(error.message || String(error), 'error');
   } finally {
