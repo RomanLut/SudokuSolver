@@ -60,14 +60,38 @@ function buildStepStates(originalPuzzle, rulesUsed) {
     const assignRegex = /r(\d)c(\d)=(\d)/g;
     let m;
     while ((m = assignRegex.exec(rule)) !== null) {
-      const idx = (parseInt(m[1]) - 1) * 9 + (parseInt(m[2]) - 1);
+      const row = parseInt(m[1]) - 1;
+      const col = parseInt(m[2]) - 1;
+      const digit = parseInt(m[3]);
+      const idx = row * 9 + col;
       board[idx] = m[3];
       cands[idx] = new Set();
+      // remove digit from peers that already have notes (size < 9 means at least one elimination happened)
+      const peers = new Set();
+      for (let c = 0; c < 9; c++) peers.add(row * 9 + c);
+      for (let r = 0; r < 9; r++) peers.add(r * 9 + col);
+      const boxR = Math.floor(row / 3) * 3;
+      const boxC = Math.floor(col / 3) * 3;
+      for (let r = boxR; r < boxR + 3; r++)
+        for (let c = boxC; c < boxC + 3; c++)
+          peers.add(r * 9 + c);
+      for (const p of peers)
+        if (cands[p].size < 9) cands[p].delete(digit);
     }
-    // eliminations: rXcY!=Z
+    // eliminations: rXcY≠Z
     const elimRegex = /r(\d)c(\d)≠(\d)/g;
     while ((m = elimRegex.exec(rule)) !== null) {
-      const idx = (parseInt(m[1]) - 1) * 9 + (parseInt(m[2]) - 1);
+      const row = parseInt(m[1]) - 1;
+      const col = parseInt(m[2]) - 1;
+      const idx = row * 9 + col;
+      if (cands[idx].size === 9) {
+        // first elimination for this cell — remove digits already placed in peer cells
+        for (let c = 0; c < 9; c++) { const d = parseInt(board[row * 9 + c]); if (d) cands[idx].delete(d); }
+        for (let r = 0; r < 9; r++) { const d = parseInt(board[r * 9 + col]); if (d) cands[idx].delete(d); }
+        const bR = Math.floor(row / 3) * 3, bC = Math.floor(col / 3) * 3;
+        for (let r = bR; r < bR + 3; r++)
+          for (let c = bC; c < bC + 3; c++) { const d = parseInt(board[r * 9 + c]); if (d) cands[idx].delete(d); }
+      }
       cands[idx].delete(parseInt(m[3]));
     }
     return {

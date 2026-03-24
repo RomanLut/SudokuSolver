@@ -14,6 +14,7 @@ body {
     background-color: var(--bg);
     color: var(--ink);
     font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
 }
 
 .container {
@@ -39,13 +40,11 @@ h2, .h4 {
     border-radius: 0;
     padding: 1.5rem;
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
-    height: 100%;
 }
 
 textarea#puzzle {
     font-family: 'Fira Code', monospace;
     min-height: 200px;
-    background-color: #f8f9fa;
     border-color: #ced4da;
     border-radius: 0;
 }
@@ -59,10 +58,12 @@ textarea#puzzle {
     grid-template-columns: repeat(9, 1fr);
     gap: 0;
     width: 100%;
-    max-width: 420px;
+    max-width: min(420px, 100%);
     margin: 0 auto;
     border: 3px solid var(--ink);
     background: #fff;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .cell {
@@ -99,6 +100,7 @@ textarea#puzzle {
     grid-template-rows: repeat(3, 1fr);
     width: 100%;
     height: 100%;
+    padding-top: 0.15rem;
 }
 
 .cell .notes span {
@@ -106,7 +108,7 @@ textarea#puzzle {
     align-items: center;
     justify-content: center;
     font-family: 'Fira Code', monospace;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: #888;
     line-height: 1;
 }
@@ -190,5 +192,55 @@ textarea#puzzle {
     }
     100% {
         transform: rotate(360deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .panel {
+        padding: 1rem;
+    }
+
+    /* step nav buttons: allow wrapping and push below heading */
+    .d-flex.justify-content-between.align-items-center {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .d-flex.justify-content-between.align-items-center > div {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 575px) {
+    .container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .panel {
+        padding: 0.75rem;
+    }
+
+    /* grid panel: no padding */
+    .panel-grid {
+        padding: 0;
+    }
+
+    /* cell is ~(100vw - 8px)/9; keep digit at ~58% of cell, note at ~82% of sub-cell */
+    .cell {
+        font-size: clamp(0.9rem, 6.5vw, 1.7rem);
+    }
+
+    .cell .notes span {
+        font-size: clamp(0.35rem, 3vw, 0.8rem);
+    }
+
+    textarea#puzzle {
+        min-height: 140px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
     }
 }
