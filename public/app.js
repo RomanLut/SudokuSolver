@@ -72,11 +72,22 @@ async function getSolverBridge() {
   return solverBridgePromise;
 }
 
+const solveBtn = document.getElementById('solve');
+const sampleBtn = document.getElementById('sample');
+const clearBtn = document.getElementById('clear');
+
+function setSolving(solving) {
+  solveBtn.disabled = solving;
+  sampleBtn.disabled = solving;
+  clearBtn.disabled = solving;
+}
+
 async function solvePuzzle() {
   const puzzle = puzzleEl.value;
   setStatus('Solving...', 'solving');
   outputEl.textContent = '';
   rulesEl.innerHTML = '';
+  setSolving(true);
 
   try {
     const solver = await getSolverBridge();
@@ -87,6 +98,8 @@ async function solvePuzzle() {
     setStatus(`Solved in browser. Parsed ${data.rulesUsed.length} rule lines.`, 'ok');
   } catch (error) {
     setStatus(error.message || String(error), 'error');
+  } finally {
+    setSolving(false);
   }
 }
 
@@ -115,5 +128,12 @@ puzzleEl.addEventListener('input', () => {
   renderPuzzleGrid(gridEl, puzzleEl.value);
 });
 
-puzzleEl.value = samplePuzzles[0];
-renderPuzzleGrid(gridEl, samplePuzzles[0]);
+const boardParam = new URLSearchParams(window.location.search).get('board');
+if (boardParam) {
+  puzzleEl.value = boardParam;
+  renderPuzzleGrid(gridEl, boardParam);
+  solvePuzzle();
+} else {
+  puzzleEl.value = samplePuzzles[0];
+  renderPuzzleGrid(gridEl, samplePuzzles[0]);
+}

@@ -146,8 +146,8 @@ export function createStepViewer(gridEl, rulesEl, explainBtnEl, copyBtnEl, first
     if (explainBtnEl) explainBtnEl.disabled = noSteps || noStep;
     if (copyBtnEl)    copyBtnEl.disabled    = noSteps;
     if (firstBtnEl)   firstBtnEl.disabled   = noSteps || atStart;
-    if (prevBtnEl)  prevBtnEl.disabled  = noSteps || atStart;
-    if (nextBtnEl)  nextBtnEl.disabled  = noSteps || atEnd;
+    if (prevBtnEl)  prevBtnEl.disabled  = noSteps || noStep || atStart;
+    if (nextBtnEl)  nextBtnEl.disabled  = noSteps || noStep || atEnd;
     if (lastBtnEl)  lastBtnEl.disabled  = noSteps || atEnd;
   }
 
@@ -215,7 +215,7 @@ export function createStepViewer(gridEl, rulesEl, explainBtnEl, copyBtnEl, first
     if (selectedStepIndex < 0) return;
     const board = stepStates[selectedStepIndex].boardState.map(c => c || '.').join('');
     const step = rulesUsed[selectedStepIndex] || '';
-    const prompt = `Show 9x9 sudoku board\n${board}\nExplain step:\n${step}`;
+    const prompt = `Show 9x9 sudoku board\n${board}\nBoard is in state after applying step. Explain how step was applied:\n${step}`;
     window.open(`https://chatgpt.com/?temporary-chat=true&prompt=${encodeURIComponent(prompt)}`, '_blank');
   });
   if (prevBtnEl)  prevBtnEl.addEventListener('click',  () => selectStep(selectedStepIndex <= 0 ? 0 : selectedStepIndex - 1, true));

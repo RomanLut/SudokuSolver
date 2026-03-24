@@ -19,9 +19,19 @@ const stepViewer = createStepViewer(
   document.getElementById('step-last'),
 );
 
+const solveBtn = document.getElementById('solve');
+const sampleBtn = document.getElementById('sample');
+const clearBtn = document.getElementById('clear');
+
 function setStatus(message, type = '') {
   statusEl.textContent = message;
   statusEl.className = `status ${type}`.trim();
+}
+
+function setSolving(solving) {
+  solveBtn.disabled = solving;
+  sampleBtn.disabled = solving;
+  clearBtn.disabled = solving;
 }
 
 async function solvePuzzle() {
@@ -29,6 +39,7 @@ async function solvePuzzle() {
   setStatus('Solving...', 'solving');
   outputEl.textContent = '';
   rulesEl.innerHTML = '';
+  setSolving(true);
 
   try {
     const response = await fetch('/api/solve', {
@@ -48,6 +59,8 @@ async function solvePuzzle() {
     setStatus(`Solved with native CLIPS. Parsed ${data.rulesUsed.length} rule lines.`, 'ok');
   } catch (error) {
     setStatus(error.message || String(error), 'error');
+  } finally {
+    setSolving(false);
   }
 }
 
@@ -76,5 +89,12 @@ puzzleEl.addEventListener('input', () => {
   renderPuzzleGrid(gridEl, puzzleEl.value);
 });
 
-puzzleEl.value = samplePuzzles[0];
-renderPuzzleGrid(gridEl, samplePuzzles[0]);
+const boardParam = new URLSearchParams(window.location.search).get('board');
+if (boardParam) {
+  puzzleEl.value = boardParam;
+  renderPuzzleGrid(gridEl, boardParam);
+  solvePuzzle();
+} else {
+  puzzleEl.value = samplePuzzles[0];
+  renderPuzzleGrid(gridEl, samplePuzzles[0]);
+}
