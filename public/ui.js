@@ -130,10 +130,11 @@ function renderStepBoard(gridEl, originalPuzzle, boardState, candsState, highlig
   }
 }
 
-export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtnEl, lastBtnEl) {
+export function createStepViewer(gridEl, rulesEl, explainBtnEl, copyBtnEl, firstBtnEl, prevBtnEl, nextBtnEl, lastBtnEl) {
   let currentPuzzle = '';
   let currentSolvedGrid = null;
   let stepStates = [];
+  let rulesUsed = [];
   let selectedStepIndex = -1;
 
   function updateButtons() {
@@ -141,7 +142,10 @@ export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtn
     const noSteps = total === 0;
     const atStart = !noSteps && selectedStepIndex === 0;
     const atEnd   = !noSteps && selectedStepIndex === total - 1;
-    if (firstBtnEl) firstBtnEl.disabled = noSteps || atStart;
+    const noStep = selectedStepIndex < 0;
+    if (explainBtnEl) explainBtnEl.disabled = noSteps || noStep;
+    if (copyBtnEl)    copyBtnEl.disabled    = noSteps;
+    if (firstBtnEl)   firstBtnEl.disabled   = noSteps || atStart;
     if (prevBtnEl)  prevBtnEl.disabled  = noSteps || atStart;
     if (nextBtnEl)  nextBtnEl.disabled  = noSteps || atEnd;
     if (lastBtnEl)  lastBtnEl.disabled  = noSteps || atEnd;
@@ -196,16 +200,35 @@ export function createStepViewer(gridEl, rulesEl, firstBtnEl, prevBtnEl, nextBtn
   }
 
   if (firstBtnEl) firstBtnEl.addEventListener('click', () => selectStep(0, true));
+  if (copyBtnEl)  copyBtnEl.addEventListener('click', () => {
+    let board;
+    if (selectedStepIndex >= 0) {
+      board = stepStates[selectedStepIndex].boardState.map(c => c || '.').join('');
+    } else if (currentSolvedGrid) {
+      board = currentSolvedGrid.join('');
+    } else {
+      return;
+    }
+    navigator.clipboard.writeText(board);
+  });
+  if (explainBtnEl) explainBtnEl.addEventListener('click', () => {
+    if (selectedStepIndex < 0) return;
+    const board = stepStates[selectedStepIndex].boardState.map(c => c || '.').join('');
+    const step = rulesUsed[selectedStepIndex] || '';
+    const prompt = `Show 9x9 sudoku board\n${board}\nExplain step:\n${step}`;
+    window.open(`https://chatgpt.com/?temporary-chat=true&prompt=${encodeURIComponent(prompt)}`, '_blank');
+  });
   if (prevBtnEl)  prevBtnEl.addEventListener('click',  () => selectStep(selectedStepIndex <= 0 ? 0 : selectedStepIndex - 1, true));
   if (nextBtnEl)  nextBtnEl.addEventListener('click',  () => selectStep(selectedStepIndex + 1, true));
   if (lastBtnEl)  lastBtnEl.addEventListener('click',  () => selectStep(stepStates.length - 1, true));
 
   return {
-    setup(puzzle, solvedGrid, rulesUsed) {
+    setup(puzzle, solvedGrid, rules) {
       currentPuzzle = puzzle;
       currentSolvedGrid = solvedGrid;
-      stepStates = buildStepStates(puzzle, rulesUsed);
-      renderRules(rulesUsed);
+      rulesUsed = rules;
+      stepStates = buildStepStates(puzzle, rules);
+      renderRules(rules);
     },
   };
 }

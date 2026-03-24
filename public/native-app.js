@@ -11,6 +11,8 @@ const outputEl = document.getElementById('output');
 
 const stepViewer = createStepViewer(
   gridEl, rulesEl,
+  document.getElementById('step-explain'),
+  document.getElementById('step-copy'),
   document.getElementById('step-first'),
   document.getElementById('step-prev'),
   document.getElementById('step-next'),

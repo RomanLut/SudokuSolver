@@ -212,6 +212,26 @@ textarea#puzzle {
     }
 }
 
+@media (max-width: 991px) {
+    .rules-row > .col-12 {
+        margin-top: 0.9rem !important;
+    }
+
+    .step-nav-btns {
+        row-gap: 1rem !important;
+        column-gap: 1.5rem !important;
+    }
+
+    .step-nav-btns > div {
+        column-gap: 0.75rem !important;
+    }
+
+    .step-nav-btns .btn {
+        padding-top: calc(var(--bs-btn-padding-y) * 1.44);
+        padding-bottom: calc(var(--bs-btn-padding-y) * 1.44);
+    }
+}
+
 @media (max-width: 575px) {
     .container {
         padding-left: 0.5rem;

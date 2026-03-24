@@ -38,16 +38,20 @@
             </div>
         </div>
     </div>
-    <div class="row g-4 mt-0">
+    <div class="row g-4 mt-0 rules-row">
         <div class="col-12">
             <div class="panel">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h2 class="h4 mb-0">Rules Used</h2>
-                    <div class="d-flex flex-wrap gap-2">
-                        <button id="step-first" class="btn btn-sm btn-outline-secondary" disabled>&#9646;&#9664; First</button>
-                        <button id="step-prev" class="btn btn-sm btn-outline-secondary" disabled>&#9664; Prev</button>
-                        <button id="step-next" class="btn btn-sm btn-outline-secondary" disabled>Next &#9654;</button>
-                        <button id="step-last" class="btn btn-sm btn-outline-secondary" disabled>Last &#9654;&#9646;</button>
+                    <div class="d-flex flex-wrap gap-2 step-nav-btns">
+                        <button id="step-explain" class="btn btn-sm btn-outline-secondary" disabled>Explain step...</button>
+                        <button id="step-copy" class="btn btn-sm btn-outline-secondary" disabled>Copy to clipboard</button>
+                        <div class="d-flex gap-1">
+                            <button id="step-first" class="btn btn-sm btn-outline-secondary" disabled>&#9646;&#9664; First</button>
+                            <button id="step-prev" class="btn btn-sm btn-outline-secondary" disabled>&#9664; Prev</button>
+                            <button id="step-next" class="btn btn-sm btn-outline-secondary" disabled>Next &#9654;</button>
+                            <button id="step-last" class="btn btn-sm btn-outline-secondary" disabled>Last &#9654;&#9646;</button>
+                        </div>
                     </div>
                 </div>
                 <ol id="rules" class="list-group list-group-numbered"></ol>
